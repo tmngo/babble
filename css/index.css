@@ -1,0 +1,374 @@
+:root {
+    --font-large-min: 24px;
+    --font-large-max: 40px;
+    --font-tiny-min: 10px;
+    --font-tiny-max: 18px;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    height: 100%;
+}
+
+*, 
+::after, 
+::before {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #ccc;
+    height: 100%;
+    margin: 0;
+    font-family: "IBM Plex Sans", sans-serif;
+    overflow-x: hidden;
+}
+
+#app {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-around;
+    margin: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+#floating-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    max-width: 720px;
+    width: 100%;
+}
+
+#button-menu {
+    display: flex;
+    align-self: flex-end;
+    justify-content: flex-end;
+    pointer-events: all;
+    padding: 1rem;
+}
+
+#button-menu button {
+    margin-left: 0.5rem;
+    z-index: 10;
+}
+
+.btn {
+    padding: 0.125rem 0.25rem;
+    background-color: #3330;
+    border: solid #333333 1px;
+    border-radius: 3px;
+    transition: all 0.1s cubic-bezier(.25,.8,.25,1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    text-shadow: 0.25px 0.25px 0.25px #333333;
+    font-weight: bold;
+    font-size: 0.75rem;
+    margin: 0;
+}
+
+.btn:hover,
+.btn:active {
+    border: solid #333333 1px;
+    color: white;
+    background-color: #333333;
+}
+
+.btn-toggled {
+    border: solid #333333 1px;
+    color: white;
+    background-color: #333333;
+}
+
+.btn:active {
+    transform: translateY(2px);
+}
+
+#current-word {
+    align-items: center; 
+    display: flex; 
+    font-weight: bold; 
+    height: 1.5rem; 
+    justify-content: center; 
+    letter-spacing: 2px; 
+    padding: 2% 0 5% 0; 
+    position: relative;
+    text-align: center;
+    text-transform: uppercase; 
+    width: 100%; 
+}
+
+#wrapper {
+    display: flex;
+    width: 100%;
+    position: relative;
+    padding-top: 100%;
+}
+
+#grid-margin {
+    position: absolute;
+    top: -15%;
+    right: -15%;
+    bottom: -15%;
+    left: -15%;
+}
+
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+#menu {
+    display: grid;
+    grid-gap: 0.25rem;
+    width: 100%;
+    grid: auto-flow / minmax(1fr, 12rem) minmax(4rem, 8rem);
+    padding: 3%;
+    bottom: auto;
+    right: auto;
+}
+
+#menu input {
+    padding: 0.25rem;
+    border-radius: 2px;
+    border: solid #666 1px;
+}
+
+#menu label,
+#menu input {
+    font-size: 0.75rem;
+}
+
+#menu > h2,
+#menu > p {
+    grid-column: span 2;
+}
+
+
+#statistics {
+    display: grid;
+    width: 100%;
+    grid: auto-flow / 1fr 1fr;
+    grid-gap: 0.25rem;
+    padding: 3%;
+    bottom: auto;
+    right: auto;
+}
+
+#statistics > h2 {
+    grid-column: span 2;
+}
+
+#statistics > span {
+    font-size: 0.75rem;
+}
+
+#results {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 3%;
+    font-size: 0.75rem;
+    bottom: 0;
+    right: auto;
+}
+
+#results #results-words {
+    display: grid;
+    grid: auto-flow / 1fr 1fr;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 1rem 0;
+    max-height: 80%;
+}
+
+#results > h2 {
+    grid-column: span 2;
+    font-size: 1.5rem;
+}
+
+#grid-svg {
+    position: absolute;
+}
+
+.grid-row {
+    display: flex;
+    flex-direction: row;
+    height: 25%;
+    width: 100%;
+}
+
+.grid-tile {
+    align-items: center;
+    background-color: #ccc;
+    border: solid #333 1px;
+    border-radius: 2.5%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    margin: 2.5%;
+    position: relative;
+    user-select: none;
+    text-align: center;
+    transition: all 0.1s cubic-bezier(.25,.8,.25,1);
+    width: 25%;
+}
+
+.grid-tile-selected {
+    background-color: #333;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    /* box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23); */
+    color: white;
+}
+
+.grid-tile-hitbox {
+    align-items: center;
+    border-radius: 50%;
+    display: flex;
+    font-size: 24px;
+    font-weight: bold;
+    height: 100%;
+    justify-content: center;
+    text-shadow: 0.25px 0.25px 0.25px #333333;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.grid-tile-points {
+    color: #666;
+    font-size: 10px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.word-log-container {
+    display: flex;
+    flex-direction: column-reverse;
+    height: 6rem;
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+}
+
+.word-log {
+    display: flex;
+    flex-direction: column-reverse;
+    position: absolute;
+    top: 0;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.word-log div:last-child {
+    font-weight: bold;
+}
+
+#definitions {
+    display: flex; 
+    flex-direction: column;
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem; 
+    width: 100%;
+}
+
+.timer-bar {
+    pointer-events: none;
+    width: 95%;
+    margin: 1rem 0 0.5rem 0;
+    /* background-color: #999999; */
+    border-radius: 0.125rem;
+    border: solid #666666 1px;
+    height: 0.75rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    justify-content: flex-start;
+}
+
+.timer-bar .timer-inner {
+    background-color: #333333;
+    border-radius: 0.125rem;
+    position: absolute;
+    height: 0.75rem;
+    animation: timer-bar-countdown;
+    /* Placeholder, this will be updated using javascript */
+    animation-duration: 40s;
+    /* We stop in the end */
+    animation-iteration-count: 1;
+    /* Stay on pause when the animation is finished finished */
+    animation-fill-mode: forwards;
+    /* We start paused, we start the animation using javascript */
+    animation-play-state: paused;
+    /* We want a linear animation, ease-out is standard */
+    animation-timing-function: linear;
+}
+
+.last-word {
+    opacity: 0;
+    position: absolute;
+}
+
+.last-word-animated {
+    animation: last-word-fade;
+    animation-duration: 0.9s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in;
+}
+
+@keyframes last-word-fade {
+    0% {
+        opacity: 1;
+    }
+    10% {
+
+    }
+    95% {
+        opacity: 0;
+    }
+}
+
+@keyframes timer-bar-countdown {
+    0% {
+        width: 100%;
+    }
+    100% {
+        width: 0%;
+    }
+}
+
+.font-tiny {
+    font-size: var(--font-tiny-min);
+}
+
+.font-large {
+    font-size: var(--font-large-min);
+}
+
+@media screen and (min-width: 320px) {
+    .font-tiny {
+        font-size: calc(var(--font-tiny-min) + 8 * ((100vw - 320px) / 680));
+    }
+    .font-large {
+        font-size: calc(var(--font-large-min) + 16 * ((100vw - 320px) / 680));
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    .font-tiny {
+        font-size: var(--font-tiny-max);
+    }
+    .font-large {
+        font-size: var(--font-large-max);
+    }
+}

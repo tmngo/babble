@@ -315,8 +315,8 @@ let app = new Vue({
       if (["127.0.0.1", "10.0.0.233"].includes(location.hostname)) {
         // Development
         console.log("Connecting to development web socket server.")
-        // this.sock = new WebSocket(this.socketUrl);
-        this.sock = new WebSocket(`ws://${location.hostname}:8000`);
+        this.sock = new WebSocket(this.socketUrl);
+        // this.sock = new WebSocket(`ws://${location.hostname}:8000`);
       } else {
         // Production
         console.log("Connecting to production web socket server.")
@@ -363,7 +363,7 @@ let app = new Vue({
             this.trie = new SuccinctTrie(this.trieData);
             break;
           case "time":
-            console.log(data)
+            // console.log(data)
             break;
           default:
             break;

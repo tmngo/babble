@@ -277,8 +277,7 @@ let app = new Vue({
       return this.gridText.split(" ");
     },
     socketUrl() {
-      return `ws://babblegame.herokuapp.com`;
-      // return "ws://" + location.host + "/" + this.roomName;
+      return this.dev ? `wss://${location.hostname}:8000` : `wss://babblegame.herokuapp.com`;
     },
     roomUrl() {
       return "http://" + location.host + "/" + this.roomName;
@@ -296,6 +295,8 @@ let app = new Vue({
     this.newGame.size = n ? n : 4;
     this.newGame.seed = s ? s : this.hashCode(new Date(Date.now()).toISOString()).toString(16);
     this.newGame.duration = t ? parseInt(t) : 90;
+
+    this.dev = urlParams.get('dev');
 
     /* Connect to websocket server and start new game. */
     this.connect();
@@ -321,26 +322,17 @@ let app = new Vue({
     
     /* Server connection */
 
-    connect() {
-      if (["127.0.0.1", "10.0.0.233"].includes(location.hostname)) {
-        // Development
-        console.log("Connecting to development web socket server.")
-        // this.sock = new WebSocket(this.socketUrl);
-        this.sock = new WebSocket(`ws://${location.hostname}:8000`);
-      } else {
-        // Production
-        console.log("Connecting to production web socket server.")
-        this.sock = new WebSocket(this.socketUrl);
-      }
-      
+    connect() {      
+      this.sock = new WebSocket(this.socketUrl);
+
       this.sock.onopen = (e) => {
-        console.log("Connected!")
+        console.log(`Connected to ${this.socketUrl}.`)
         this.sockEmit("user-connected", this.userId);
         this.startNewGame();
       }
 
       this.sock.onerror = (e) => {
-        console.log("Error: Unable to connect.")
+        console.log(`Error: Unable to connect to ${this.socketUrl}.`)
       }
 
       this.sock.onclose = (e) => {

@@ -232,7 +232,6 @@ let app = new Vue({
     definedWord: "",
     partsOfSpeech: [],
     definitions: {},
-    roomName: "",
     userId: "",
     show: 0,
     game: {
@@ -277,10 +276,7 @@ let app = new Vue({
       return this.gridText.split(" ");
     },
     socketUrl() {
-      return this.dev ? `wss://${location.hostname}:8000` : `wss://babblegame.herokuapp.com`;
-    },
-    roomUrl() {
-      return "http://" + location.host + "/" + this.roomName;
+      return this.dev ? `ws://${location.hostname}:8000` : `wss://babblegame.herokuapp.com`;
     },
     wordsLogSorted() {
       return [...this.wordsLog].sort(this.compareLength);

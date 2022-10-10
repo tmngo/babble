@@ -120,13 +120,6 @@ const template = `
               <span :style="{ 'font-weight': wordsFound.has(w) ? 'bold' : 'normal'}">{{ computePoints(w) }}</span>
             </template>
           </div>
-          <!--<div style="margin-top: 1rem;">
-            <button class="btn" style="padding: 0.25rem 0.5rem"
-              @click="clearStats"
-            >
-              RESET
-            </button>
-          </div>-->
         </div>
 
         <div v-show="show === 0" class="grid-container">
@@ -236,6 +229,7 @@ let app = new Vue({
     show: 0,
     game: {
       isActive: false,
+      minLength: 2,
       duration: 0,
       solution: [],
     },
@@ -381,6 +375,20 @@ let app = new Vue({
 
     /* Word addition */
 
+    validateWord() {
+      let isValidWord = this.trie.has(this.word) && this.word.length >= this.game.minLength;
+      let isNewWord = !this.wordsFound.has(this.word)
+      if (isValidWord && isNewWord) {
+        console.log("Valid word.")
+        this.addWord(this.word, this.wordPoints);
+        this.fetchDefinition(this.word);
+      } else if (isValidWord) {
+        console.log("Word already found.")
+      } else {
+        console.log("Invalid word.")
+      }
+    },
+
     addWord(word, points) {
       this.wordsFound.add(word);
       this.wordsLog.push({ word: word, points: points });
@@ -456,6 +464,7 @@ let app = new Vue({
       /* Restart timer. */
       this.game.isActive = false;
       this.game.duration = this.newGame.duration;
+      this.game.minLength = this.newGame.minLength;
       this.timerStyle['animation-duration'] = this.newGame.duration + 's';
       this.timerStyle['animation-play-state'] = 'running';
       setTimeout(() => {
@@ -622,41 +631,32 @@ let app = new Vue({
       if (!el) {
         return;
       }
-      console.log(el.id);
       if (el.id.length === 3) {
         this.handleMouseEnter(null, parseInt(el.id[1]), parseInt(el.id[2]))
       }
     },
+
     handleMouseDown(evt, i, j) {
       if (this.game.isActive) {
         this.isPathStarted = true;
         this.addToWord(i, j);
       }
     },
+
     handleMouseUp(evt, i, j) {
-      if (this.word.length > 1) {
-        let isValidWord = this.trie.has(this.word);
-        let isNewWord = !this.wordsFound.has(this.word)
-        if (isValidWord && isNewWord) {
-          console.log("Valid word.")
-          this.addWord(this.word, this.wordPoints);
-          this.fetchDefinition(this.word);
-        } else if (isValidWord) {
-          console.log("Word already found.")
-        } else {
-          console.log("Invalid word.")
-        }
+      if (this.show === 0) {
+        this.validateWord();
         this.isPathStarted = false;
         this.lastWord = this.word;
         this.animateLastWord = true;
         this.resetWord();
       }
     },
+
     handleMouseEnter(evt, i, j) {
-      if (!this.isPathStarted || !this.isAdjacent(i, j) || this.isSelected[i][j]) {
-        return;
+      if (this.isPathStarted && this.isAdjacent(i, j) && !this.isSelected[i][j]) {
+        this.addToWord(i, j);
       }
-      this.addToWord(i, j);
     },
     
   },

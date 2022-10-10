@@ -174,10 +174,10 @@ const template = `
     </div>
 
   </div>
-`
+`;
 
 let app = new Vue({
-  el: '#app',
+  el: "#app",
   data: {
     gridSize: 4,
     gridText: "abcd efgh ijkl lmno",
@@ -242,28 +242,28 @@ let app = new Vue({
     stats: {
       mostWords: 0,
       bestScore: 0,
-      longestWord: '',
-      bestWord: '',
+      longestWord: "",
+      bestWord: "",
       bestWordPoints: 0,
     },
     loading: true,
     isTimerActive: false,
     animateLastWord: false,
     timerStyle: {
-      'animation-duration': '90s',
-      'animation-play-state': 'running'
+      "animation-duration": "90s",
+      "animation-play-state": "running",
     },
   },
   watch: {
     stats: {
       handler(newVal) {
-        localStorage.setObject("stats", newVal)
+        localStorage.setObject("stats", newVal);
       },
       deep: true,
     },
     longestWord(newWord) {
       localStorage.longestWord = newWord;
-    }
+    },
   },
   computed: {
     gridArray() {
@@ -276,19 +276,21 @@ let app = new Vue({
     },
     wordsLogSorted() {
       return [...this.wordsLog].sort(this.compareLength);
-    }
+    },
   },
   created() {
     /* Get URL parameters. */
     const urlParams = new URLSearchParams(window.location.search);
-    const n = urlParams.get('n');
-    const s = urlParams.get('s');
-    const t = urlParams.get('t');
+    const n = urlParams.get("n");
+    const s = urlParams.get("s");
+    const t = urlParams.get("t");
     this.newGame.size = n ? n : 4;
-    this.newGame.seed = s ? s : this.hashCode(new Date(Date.now()).toISOString()).toString(16);
+    this.newGame.seed = s
+      ? s
+      : this.hashCode(new Date(Date.now()).toISOString()).toString(16);
     this.newGame.duration = t ? parseInt(t) : 90;
 
-    this.dev = urlParams.get('dev');
+    this.dev = urlParams.get("dev");
 
     /* Connect to websocket server and start new game. */
     this.connect();
@@ -311,33 +313,32 @@ let app = new Vue({
     this.init();
   },
   methods: {
-    
     /* Server connection */
 
-    connect() {      
+    connect() {
       this.sock = new WebSocket(this.socketUrl);
 
       this.sock.onopen = (e) => {
-        console.log(`Connected to ${this.socketUrl}.`)
+        console.log(`Connected to ${this.socketUrl}.`);
         this.sockEmit("user-connected", this.userId);
         this.startNewGame();
-      }
+      };
 
       this.sock.onerror = (e) => {
-        console.log(`Error: Unable to connect to ${this.socketUrl}.`)
-      }
+        console.log(`Error: Unable to connect to ${this.socketUrl}.`);
+      };
 
       this.sock.onclose = (e) => {
-        console.log("Disconnected!")
+        console.log("Disconnected!");
         setTimeout(() => {
-          console.log("Attempting to reconnect...")
+          console.log("Attempting to reconnect...");
           this.connect();
           this.init();
         }, 1000);
-      }
+      };
       setTimeout(() => {
         this.submitting = false;
-      }, 350)
+      }, 350);
     },
 
     init() {
@@ -345,7 +346,7 @@ let app = new Vue({
         const obj = JSON.parse(event.data);
         const msg = obj.message;
         const data = obj.data;
-        console.log("IN: " + msg)
+        console.log("IN: " + msg);
         switch (msg) {
           case "set-user-id":
             this.userId = data.id;
@@ -355,39 +356,45 @@ let app = new Vue({
             this.trie = new SuccinctTrie(data.trieData);
             break;
           case "end-game":
-            this.game.solution = data.solution.sort((a, b) => this.compareLength({word: a}, {word: b}));
+            this.game.solution = data.solution.sort((a, b) =>
+              this.compareLength({ word: a }, { word: b })
+            );
             break;
           case "time":
             break;
           default:
             break;
         }
-        setTimeout(() => {this.loading = false}, 200)
-      }
-    },
-    
-    sockEmit(message, data) {
-      console.log("OUT: " + message)
-      this.sock.send(JSON.stringify({
-        message: message,
-        data: data,
-      }));
+        setTimeout(() => {
+          this.loading = false;
+        }, 200);
+      };
     },
 
+    sockEmit(message, data) {
+      console.log("OUT: " + message);
+      this.sock.send(
+        JSON.stringify({
+          message: message,
+          data: data,
+        })
+      );
+    },
 
     /* Word addition */
 
     validateWord() {
-      let isValidWord = this.trie.has(this.word) && this.word.length >= this.game.minLength;
-      let isNewWord = !this.wordsFound.has(this.word)
+      let isValidWord =
+        this.trie.has(this.word) && this.word.length >= this.game.minLength;
+      let isNewWord = !this.wordsFound.has(this.word);
       if (isValidWord && isNewWord) {
-        console.log("Valid word.")
+        console.log("Valid word.");
         this.addWord(this.word, this.wordPoints);
         this.fetchDefinition(this.word);
       } else if (isValidWord) {
-        console.log("Word already found.")
+        console.log("Word already found.");
       } else {
-        console.log("Invalid word.")
+        console.log("Invalid word.");
       }
     },
 
@@ -402,10 +409,10 @@ let app = new Vue({
       let letter = this.gridArray[i][j];
       this.word += letter;
       this.wordPoints += this.alphabet[letter][0];
-      this.setCell(this.isSelected, i, j, true)
+      this.setCell(this.isSelected, i, j, true);
       this.iPrev = i;
       this.jPrev = j;
-      this.pathDef += (this.word.length === 1 ? 'M' : 'L') + j + ',' + i;
+      this.pathDef += (this.word.length === 1 ? "M" : "L") + j + "," + i;
     },
 
     isAdjacent(i, j) {
@@ -428,19 +435,18 @@ let app = new Vue({
       this.pathDef = "";
       for (let i = 0; i < this.gridSize; i++) {
         for (let j = 0; j < this.gridSize; j++) {
-          this.setCell(this.isSelected, i, j, false)
+          this.setCell(this.isSelected, i, j, false);
         }
       }
     },
 
-    
     /* Game state */
 
     startNewGame() {
       if (this.newGame.size < 3) {
         return;
       }
-      this.sockEmit("new-game", this.newGame)
+      this.sockEmit("new-game", this.newGame);
 
       /* Reset grid. */
       this.gridSize = this.newGame.size;
@@ -461,29 +467,27 @@ let app = new Vue({
       /* Clear definitions. */
       this.partsOfSpeech = [];
       this.definitions = {};
-      this.definedWord = '';
+      this.definedWord = "";
 
       /* Restart timer. */
       this.game.isActive = false;
       this.game.duration = this.newGame.duration;
       this.game.minLength = this.newGame.minLength;
-      this.timerStyle['animation-duration'] = this.newGame.duration + 's';
-      this.timerStyle['animation-play-state'] = 'running';
+      this.timerStyle["animation-duration"] = this.newGame.duration + "s";
+      this.timerStyle["animation-play-state"] = "running";
       setTimeout(() => {
-        console.log("Game started.")
-        this.game.isActive = true
-      }, 10)
-      
+        console.log("Game started.");
+        this.game.isActive = true;
+      }, 10);
     },
 
     endGame() {
-      console.log("Game ended.")
-      this.sockEmit("end-game", {})
+      console.log("Game ended.");
+      this.sockEmit("end-game", {});
       this.game.isActive = false;
       this.show = 3;
       this.updateGameStats();
     },
-
 
     /* Statistics */
 
@@ -513,37 +517,40 @@ let app = new Vue({
       this.stats = {
         mostWords: 0,
         bestScore: 0,
-        longestWord: '',
-        bestWord: '',
+        longestWord: "",
+        bestWord: "",
         bestWordPoints: 0,
-      }
+      };
       localStorage.clear();
     },
-
 
     /* Definitions */
 
     fetchDefinition(word) {
       axios
-      .get(`https://en.wiktionary.org/w/api.php?action=parse&format=json&prop=text&callback=?&origin=*&page=${word}`)
-      .then(response => {
-        this.definitions = {};
-        this.partsOfSpeech = [];
+        .get(
+          `https://en.wiktionary.org/w/api.php?action=parse&format=json&prop=text&callback=?&origin=*&page=${word}`
+        )
+        .then((response) => {
+          this.definitions = {};
+          this.partsOfSpeech = [];
 
-        let wikitext = JSON.parse(response.data.substring(5, response.data.length-1));
-        
-        if (wikitext.error !== undefined) {
-          console.log("The Wiktionary page does not exist.")
-          return;
-        }
+          let wikitext = JSON.parse(
+            response.data.substring(5, response.data.length - 1)
+          );
 
-        this.extractDefinition(wikitext, word);
-      });
+          if (wikitext.error !== undefined) {
+            console.log("The Wiktionary page does not exist.");
+            return;
+          }
+
+          this.extractDefinition(wikitext, word);
+        });
     },
-    
+
     extractDefinition(wikitext, word) {
-      let englishData = wikitext.parse.text["*"].match(/id="English"[\s\S]+/)
-        
+      let englishData = wikitext.parse.text["*"].match(/id="English"[\s\S]+/);
+
       if (englishData === null) {
         console.log("An English definition does not exist.");
         this.definedWord = word;
@@ -552,32 +559,33 @@ let app = new Vue({
         return;
       }
 
-      console.log("An English definition exists.")
+      console.log("An English definition exists.");
       this.definedWord = word;
 
-      definitionSections = englishData[0].split(/<h2>.*<\/h2>/)[0]
+      definitionSections = englishData[0]
+        .split(/<h2>.*<\/h2>/)[0]
         .match(/<h[234]>((?:[\s\S](?!<h[234]>))+?)<\/ol>(?!<\/li>)/g);
-      
+
       for (let i = 0; i < definitionSections.length; i++) {
         let partOfSpeech = definitionSections[i].match(/id="[\S]+"/)[0];
         partOfSpeech = partOfSpeech
           .substring(4, partOfSpeech.length - 1)
           .toLowerCase();
-          
+
         if (partOfSpeech === "references") {
           continue;
         }
-        
+
         let listData = definitionSections[i].match(/<ol>[\s\S]+<\/ol>/)[0];
         let firstDefinition = listData
           .match(/<li[^>]*>[\s\S]+?<\/li>/)[0]
-          .replace(/<li[^>]*><\/li>/g, "")    // Remove empty list items
-          .replace(/<li[^>]*>/g, "")          // Remove leading list item tag
-          .replace(/<a[^<>]+?>/g, "")         // Remove links
+          .replace(/<li[^>]*><\/li>/g, "") // Remove empty list items
+          .replace(/<li[^>]*>/g, "") // Remove leading list item tag
+          .replace(/<a[^<>]+?>/g, "") // Remove links
           .match(/[\s\S]*?(?=\.|(<\/li>)|(\s?<ul>))/)[0]
-          .replace(/<[^<>]+?>/g, "")          // Remove tags
-          .replace(/(&#32;)/g, " ");          // Replace HTML space entity
-        
+          .replace(/<[^<>]+?>/g, "") // Remove tags
+          .replace(/(&#32;)/g, " "); // Replace HTML space entity
+
         this.partsOfSpeech.push(partOfSpeech);
         this.definitions[partOfSpeech] = firstDefinition;
         if (this.partsOfSpeech.length > 2) {
@@ -585,7 +593,6 @@ let app = new Vue({
         }
       }
     },
-    
 
     /* Helpers */
 
@@ -601,10 +608,12 @@ let app = new Vue({
     },
 
     hashCode(str) {
-      let hash = 0, i, chr;
+      let hash = 0,
+        i,
+        chr;
       for (i = 0; i < str.length; i++) {
         chr = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + chr;
+        hash = (hash << 5) - hash + chr;
         hash |= 0; // Convert to 32bit integer
       }
       return hash > 0 ? hash : -hash;
@@ -625,16 +634,18 @@ let app = new Vue({
       return a.word.length > b.word.length ? -1 : 1;
     },
 
-
     /* Input handling */
 
     handleTouchMove(evt) {
-      let el = document.elementFromPoint(evt.touches[0].clientX, evt.touches[0].clientY);
+      let el = document.elementFromPoint(
+        evt.touches[0].clientX,
+        evt.touches[0].clientY
+      );
       if (!el) {
         return;
       }
       if (el.id.length === 3) {
-        this.handleMouseEnter(null, parseInt(el.id[1]), parseInt(el.id[2]))
+        this.handleMouseEnter(null, parseInt(el.id[1]), parseInt(el.id[2]));
       }
     },
 
@@ -656,11 +667,14 @@ let app = new Vue({
     },
 
     handleMouseEnter(evt, i, j) {
-      if (this.isPathStarted && this.isAdjacent(i, j) && !this.isSelected[i][j]) {
+      if (
+        this.isPathStarted &&
+        this.isAdjacent(i, j) &&
+        !this.isSelected[i][j]
+      ) {
         this.addToWord(i, j);
       }
     },
-    
   },
   template: template,
 });

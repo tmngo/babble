@@ -58,7 +58,7 @@ const template = `
             </button>
           </div>
           
-          <p>By <a href="https://timmngo.github.io">Tim Ngo</a>.</p>
+          <p>By <a href="https://tmngo.github.io">Tim Ngo</a>.</p>
         </div>
 
         <div v-show="show === 2" id="statistics" class="grid-container">
@@ -270,7 +270,9 @@ let app = new Vue({
       return this.gridText.split(" ");
     },
     socketUrl() {
-      return this.dev ? `ws://${location.hostname}:8000` : `wss://babblegame.herokuapp.com`;
+      return this.dev
+        ? `ws://${location.hostname}:8000`
+        : `wss://babble.fly.dev`;
     },
     wordsLogSorted() {
       return [...this.wordsLog].sort(this.compareLength);
